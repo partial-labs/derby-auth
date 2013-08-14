@@ -2,17 +2,6 @@ _ = require "lodash"
 deepCopy = require("racer/lib/util").deepCopy
 
 ###
-Sets up db indexes
-###
-ensureIndexes = (mongo, strategies) ->
-  ensure = mongo.collection('auths').ensureIndex
-  ensure {'local.username': 1}, {background: true}, (err, replies) ->
-  # Go through each provider the website is using and create indexes like {facebook.id: 1}
-  _.each strategies, (obj, name) ->
-    index = {}; index["#{name}.id"] = 1
-    ensure index, {background: true}, ->
-
-###
 Sets up onQuery & onChange convenience methods so we can write accessControl methods. Moved to util.js because
 they might be moved to racer core in the future.
 ###
@@ -96,13 +85,7 @@ accessControl = (store) ->
 
 ###
   {store} The Racer store. Needed for setting up accessControl
-  {mongo} The initialized mongoskin object. The reason we need this is to run db.ensureIndexes() on first run,
-    and we may need in the future to access sensitive auth properties due to missing mongo projections feature
-    in Racer 0.5 (@see http://goo.gl/mloKO)
 ###
-module.exports = (store, mongo, strategies) ->
-  # FIXME this is very much needed, but commented out because causing https://gist.github.com/lefnire/6f585109187eb06338fc
-  # ensureIndexes(mongo, strategies)
-
+module.exports = (store) ->
   init(store)
   accessControl(store)
